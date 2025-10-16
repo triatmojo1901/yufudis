@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Diagnosa Mobil Sederhana</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0080ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px 30px 50px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #pertanyaan {
+            font-size: 1.5em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .tombol-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .tombol-opsi {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .tombol-opsi:hover {
+            background-color: #0056b3;
+        }
+
+        #tombol-ulang {
+            background-color: #dc3545;
+            color: white;
+            display: none;
+            margin-top: 20px;
+        }
+
+        #tombol-ulang:hover {
+            background-color: #c82333;
+        }
+
+        #hasil {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #28a745;
+            margin-top: 20px;
+        }
+
+        /* Gaya baru untuk merapikan dan membesarkan gambar */
+        #hasil-gambar {
+            display: block;
+            margin: 20px auto 0;
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        #hasil-gambar:hover {
+            transform: scale(1.03);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Diagnosa Penyakit</h1>
+    <p id="pertanyaan"></p>
+
+    <div class="tombol-container">
+        <button id="tombol-ya" class="tombol-opsi">Ya</button>
+        <button id="tombol-tidak" class="tombol-opsi">Tidak</button>
+    </div>
+
+    <p id="hasil"></p>
+    <img id="hasil-gambar" src="" alt="Gambar Hasil Diagnosa" style="display:none;">
+    <button id="tombol-ulang">Mulai Ulang</button>
+</div>
+
+<script>
+    const pohonDiagnosa = {
+        pertanyaan: "Apakah Anda mengalami demam?",
+        jawabanYa: {
+            pertanyaan: "Apakah Anda mengalami batuk?",
+            jawabanYa: {
+                pertanyaan: "Apakah Anda mengalami sesak nafas?",
+                jawabanYa: {
+                    hasil: "Kemungkinan Anda terkena COVID-19.Segera Vaksinasi lengkap+Booster,isolasi mandiri,istirahat yang cukup,minum banyak cairan,makan bergizi seimbang,minum obat Simptomatik,dan tetap pantau kondisi anda. ",
+                    gambar: "COVID-19.jpg"
+                },
+                jawabanTidak: {
+                    hasil: "Kemungkinan besar Anda mengalami flu biasa.Cobalah untuk istirahat yang cukup,banyak minum air,makan makanan bergizi,jaga tubuh agar tetap hangat,dan atasi dengan meminum obat dari Apotik (jika perlu).",
+                    gambar: "orang flu.jpg"
+                }
+            },
+            jawabanTidak: {
+                hasil: "Kemungkinan anda hanya masuk angin.Cobalah untuk istirahat yang cukup,minum minuman hangat,pijat/kerokan,jaga tubuh agar tetap hangat,atau anda bisa membeli obat di Apotik terdekat (jika perlu).",
+                gambar: "masuk angin.jpg"
+            }
+        },
+        jawabanTidak: {
+            hasil: "Kemungkinan anda tidak sakit,anda baik-baik saja.",
+            gambar: "orang sehat.jpg"
+        }
+    };
+
+    let currentNode = pohonDiagnosa;
+
+    const pertanyaanEl = document.getElementById('pertanyaan');
+    const tombolYa = document.getElementById('tombol-ya');
+    const tombolTidak = document.getElementById('tombol-tidak');
+    const tombolUlang = document.getElementById('tombol-ulang');
+    const hasilEl = document.getElementById('hasil');
+    const gambarHasilEl = document.getElementById('hasil-gambar');
+
+    function tampilkanPertanyaan() {
+        if (currentNode.pertanyaan) {
+            pertanyaanEl.textContent = currentNode.pertanyaan;
+            tombolYa.style.display = 'inline-block';
+            tombolTidak.style.display = 'inline-block';
+            hasilEl.textContent = '';
+            gambarHasilEl.style.display = 'none';
+            tombolUlang.style.display = 'none';
+        } else {
+            pertanyaanEl.textContent = '';
+            hasilEl.textContent = currentNode.hasil;
+
+            if (currentNode.gambar) {
+                gambarHasilEl.src = currentNode.gambar;
+                gambarHasilEl.alt = currentNode.hasil;
+                gambarHasilEl.style.display = 'block';
+            } else {
+                gambarHasilEl.style.display = 'none';
+            }
+
+            tombolYa.style.display = 'none';
+            tombolTidak.style.display = 'none';
+            tombolUlang.style.display = 'inline-block';
+        }
+    }
+
+    tombolYa.addEventListener('click', () => {
+        currentNode = currentNode.jawabanYa;
+        tampilkanPertanyaan();
+    });
+
+    tombolTidak.addEventListener('click', () => {
+        currentNode = currentNode.jawabanTidak;
+        tampilkanPertanyaan();
+    });
+
+    tombolUlang.addEventListener('click', () => {
+        currentNode = pohonDiagnosa;
+        tampilkanPertanyaan();
+    });
+
+    tampilkanPertanyaan();
+</script>
+
+</body>
+</html>
